@@ -13,7 +13,9 @@ UDP_BROADCAST_PORT = 13117  # For broadcasting offers
 UDP_LISTEN_PORT = 13118     # For handling client requests
 TCP_BROADCAST_PORT = 13119  # For TCP connections
 BUFFER_SIZE = 1024
-BROAD_CAST_DELAY = 10
+BROADCAST_IP = '192.168.115.255'
+BROAD_CAST_DELAY = 2
+
 
 # Packet Formats
 OFFER_PACKET_FORMAT = "!IBHH"
@@ -22,11 +24,11 @@ PAYLOAD_PACKET_FORMAT = "!IBQI"
 
 def server_broadcast():
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-
     message = struct.pack(OFFER_PACKET_FORMAT, MAGIC_COOKIE, OFFER_TYPE, UDP_LISTEN_PORT, TCP_BROADCAST_PORT)
     while True:
-        udp_socket.sendto(message, ('<broadcast>', UDP_BROADCAST_PORT))
+        udp_socket.sendto(message, (BROADCAST_IP, UDP_BROADCAST_PORT))
         print(f"Broadcasting offer on port UDP: {UDP_BROADCAST_PORT}, TCP: {TCP_BROADCAST_PORT}")
         time.sleep(BROAD_CAST_DELAY)
 
